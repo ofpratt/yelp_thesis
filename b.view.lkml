@@ -49,13 +49,17 @@ view: b {
     when ${categories} like "%Home Services%" then "Home Services"
     when ${categories} like "%Hotels%" then "Hotels"
     when ${categories} like "%Accessories%" then "Jewlery"
-
+    when ${categories} like "%Restaurants%" then "Restaurant"
 
     else "Other" end;;
   }
 
   dimension: city {
     type: string
+    link: {
+      label: "{{ value }} Dashboard"
+      url: "/dashboards/318?City={{ value }}"
+      icon_url: "http://looker.com/favicon.ico"}
     sql: ${TABLE}.city ;;
     drill_fields: [category_groups]
   }
@@ -94,6 +98,21 @@ dimension: states_map_layer{
   }
 
   dimension: name {
+    link: {
+      label: "Google Search"
+      url: " http://www.google.com/search?q={{value}}"
+      icon_url: "http://google.com/favicon.ico"
+    }
+    link: {
+      label: "{{ value }} Dashboard"
+      url: "/dashboards/319?Business%20name={{ value }}"
+      icon_url: "http://looker.com/favicon.ico"
+    }
+#     link: {
+#       label: "Test"
+#       url: "/dashboards/323?Business%20Name={{ value }}"
+#       icon_url: "http://looker.com/favicon.ico"
+#     }
     type: string
     sql: ${TABLE}.name ;;
   }
