@@ -12,19 +12,58 @@ view: b {
   }
 
   dimension: business_id {
+    primary_key:  yes
     type: string
     sql: ${TABLE}.business_id ;;
   }
+
 
   dimension: categories {
     type: string
     sql: ${TABLE}.categories ;;
   }
 
+  dimension: category_groups {
+    type: string
+    sql: case
+    when ${categories} like "%Auto Repair%" then "Automobile"
+    when ${categories} like "%Food%" then "Restaurant"
+    when ${categories} like "%Pool%" then "Pool/Hot Tub Services"
+    when ${categories} like "%Massage%" then "Spa"
+    when ${categories} like "%Beauty%" then "Beauty"
+    when ${categories} like "%Bars%" then "Bars"
+    when ${categories} like "%Clothing%Fashion%Shopping%" then "Shopping"
+    when ${categories} like "%Lawyers%" then "Lawyers"
+    when ${categories} like "%Party%" then "Nightlife"
+    when ${categories} like "%Cafe%" then "Cafe"
+    when ${categories} like "%Cannabis%" then "Dispensary"
+    when ${categories} like "%Amusement Parks%" then "Amusement Parks"
+    when ${categories} like "%Active Life%" then "Outdoors"
+    when ${categories} like "%Fast Food%" then "Fast Food"
+    when ${categories} like "%Vape Shops%" then "Vape Shops"
+    when ${categories} like "%Prof%" then "Professional Services"
+    when ${categories} like "%Art%" then "Art Gallery"
+    when ${categories} like "%Accountants%" then "Financial Services"
+    when ${categories} like "%Real Estate%" then "Real Estate"
+    when ${categories} like "%Health%" then "Health"
+    when ${categories} like "%Home Services%" then "Home Services"
+    when ${categories} like "%Hotels%" then "Hotels"
+    when ${categories} like "%Accessories%" then "Jewlery"
+
+
+    else "Other" end;;
+  }
+
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
+    drill_fields: [category_groups]
   }
+
+dimension: states_map_layer{
+  map_layer_name: us_states
+  sql: ${state} ;;
+}
 
   dimension: hours {
     hidden: yes
@@ -37,13 +76,21 @@ view: b {
   }
 
   dimension: latitude {
+    hidden: yes
     type: number
     sql: ${TABLE}.latitude ;;
   }
 
   dimension: longitude {
+    hidden:  yes
     type: number
     sql: ${TABLE}.longitude ;;
+  }
+
+  dimension: business_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
   }
 
   dimension: name {
@@ -51,15 +98,57 @@ view: b {
     sql: ${TABLE}.name ;;
   }
 
+measure: avg_lat {
+  type: average
+  sql: ${latitude} ;;
+}
+
+measure: avg_long {
+  type: average
+  sql: ${longitude} ;;
+}
+
   dimension: postal_code {
-    type: string
+    type: number
     sql: ${TABLE}.postal_code ;;
   }
+
+  measure: count_unique_business {
+    type: count_distinct
+    sql: ${name} ;;
+    drill_fields: [name,address,category_groups,stars]
+  }
+
+  dimension: postal_map_test {
+    type: zipcode
+    map_layer_name: us_zipcode_tabulation_areas
+    sql: ${postal_code} ;;
+  }
+
+dimension: zipcode_tier {
+  type: tier
+  tiers: [10000,20000,30000,40000,50000,60000,70000,80000,90000,99999]
+  style: integer
+  sql: safe_cast(${postal_code} as float64) ;;
+}
 
   dimension: review_count {
     type: number
     sql: ${TABLE}.review_count ;;
   }
+
+  measure: review_average {
+    type: average
+    sql: ${review_count} ;;
+    value_format_name: decimal_0
+  }
+
+# dimension: us_regions {
+#   type: string
+#   sql: case
+#   when ${zipcode_tier} = 'Below 10000' then 'North Eastern'
+#   else 'no';;
+# }
 
   dimension: stars {
     type: number
@@ -71,7 +160,7 @@ view: b {
     sql: ${TABLE}.state ;;
   }
 
-  measure: count {
+  measure: business_count {
     type: count
     drill_fields: [name]
   }
