@@ -60,6 +60,7 @@ view: b {
       label: "{{ value }} Dashboard"
       url: "/dashboards/318?City={{ value }}"
       icon_url: "http://looker.com/favicon.ico"}
+    #html: <a href="/dashboards/318?City={{ value }}">{{ value }}</a>  ;;
     sql: ${TABLE}.city ;;
     drill_fields: [category_groups]
   }

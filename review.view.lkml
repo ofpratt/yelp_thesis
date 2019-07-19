@@ -13,8 +13,15 @@ view: review {
   }
 
   dimension: cool {
+    description: "Number of 'Cool' votes on review"
     type: number
     sql: ${TABLE}.cool ;;
+  }
+
+  measure: star_avg{
+    type: average
+    sql: ${stars};;
+    value_format: "0.##"
   }
 
   dimension_group: date {
@@ -32,6 +39,7 @@ view: review {
   }
 
   dimension: funny {
+    description: "Number of 'Funny' votes on review"
     type: number
     sql: ${TABLE}.funny ;;
   }
@@ -42,11 +50,13 @@ view: review {
   }
 
   dimension: text {
+    description: "The review itself"
     type: string
     sql: ${TABLE}.text ;;
   }
 
   dimension: useful {
+    description: "Number of 'Useful' votes on review"
     type: number
     sql: ${TABLE}.useful ;;
   }
