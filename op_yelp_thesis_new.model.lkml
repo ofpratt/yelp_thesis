@@ -87,7 +87,7 @@ explore: fast_facts {
 }
 
 explore: user {
-  sql_always_where: ${b.is_open} = 1 ;;
+  sql_always_where: ${b.is_open} = 1 AND ${b.category_groups} <> "Other";;
   join: review {
     type: left_outer
     sql_on: ${user.user_id} = ${review.user_id};;
