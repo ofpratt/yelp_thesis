@@ -51,6 +51,7 @@ explore: tip {
 explore: sql_runner_query {
   join: self_join {
     from: sql_runner_query
+    view_label: "{{ ._view._name }}"
     type: left_outer
     sql_on: ${sql_runner_query.b_business_id} = ${self_join.b_business_id} ;;
     relationship: one_to_one
